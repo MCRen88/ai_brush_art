@@ -1,0 +1,124 @@
+= Better Styles
+
+link:../README.adoc[English] | 日本語
+
+Better Stylesは https://github.com/AUTOMATIC1111/stable-diffusion-webui[Stable Diffusion web UI] の拡張機能で、より良いスタイルの管理用UIを提供します。
+
+== 概要
+Better Stylesはスタイルを管理するためのより良いGUIを提供します。オリジナルのStyles機能ではプロンプトとネガティブプロンプトしか保存できませんが、Better StylesはサンプリングメソッドやCFGスケールなどのパラメータもスタイルとして保存することができます。さらに、スタイルに対してサムネイルを設定するが可能で、直感的にスタイルを扱うことができます。
+
+image::images/overview.png[Image - Better Styles UI]
+
+== 注意事項
+Better StylesはJavaScriptベースの拡張機能です。``--data-dir``のオプションを使用するなどでJavaScriptファイルが正常に読み込まれなかった場合、Better Stylesが機能しなくなりますのでご留意ください。
+
+== インストール
+=== ブラウザからインストール (推奨)
+Extensions タブの``Install from URL``からインストールすることができます。``URL for extension's git repository``の項目に https://github.com/eideehi/sd-webui-better-styles.git を入力して``Install``ボタンを押すだけです。
+
+image::images/install.png[Image - Install]
+
+=== Gitを使用してインストール
+Stable Diffusion web UIをインストールしたディレクトリで以下のコマンドを実行してもインストールすることが可能です。
+[source,shell]
+----
+git clone https://github.com/eideehi/sd-webui-better-styles.git extensions/sd-webui-better-styles
+----
+
+=== 別のバージョンを使用する
+上記の方法でインストールを行うと、最新のバージョンがインストールされます。しかし、それではあなたの使用しているWeb UIのバージョンでは動作しないかもしれません。Better Stylesが正常に動作しない場合、別のバージョンを使用することで解決できるかもしれません。
+
+Better Stylesのバージョンを変更するにはgitを使用する必要があります。Stable Diffusion web UIの **extensions** ディレクトリ内部の**Better Stylesをインストールしたディレクトリ**で以下のコマンドを実行します。
+[source,shell]
+----
+git checkout x.y.z
+----
+
+NOTE: 上記の "x.y.z" を使用したいバージョンに置き換えてください。現在利用可能なバージョンは次のとおりです。
+
+|===
+| バージョン    | Web UIのバージョン (最小) | Web UIのバージョン (最大)
+| 1.0.0 - 1.0.1 | b2073781 (2023-02-16)     | a9eab236 (2023-03-24)
+| 1.1.0 - 1.1.3 | 9e1afa9e (2023-03-25)     | 1.1.0までのどこか
+| 1.2.0         | 1.1.0                     | 1.4.0
+| 1.3.0         | 1.1.1                     | 1.4.0
+| 1.4.0 - 1.4.1 | 1.1.1                     | ~
+|===
+
+Better Stylesが動作するWeb UIの最小と最大のバージョンは開発者が動作を確認したものであり、正確にはバージョンが前後することもあることをご承知おきください。
+
+=== バージョンを最新版に戻す
+さて、別のバージョンに切り替えられたのはいいですが、この状態ではCheck for updatesのボタンを押してもBetter Stylesのアップデートは取得されず、常にLatestと表示されてしまいます。アップデートを行うために最新のバージョンに戻すには次のgitコマンドを使用します。
+[source,shell]
+----
+git checkout main
+----
+
+これでCheck for updatesのボタンでBetter Stylesをアップデートできるようになりました。
+
+== 使用方法
+=== Better Stylesコンテンツの表示
+Better Stylesをインストールすると、``txt2img``と``img2img``のタブにある``Generate``ボタンの下に新しいボタン（栞の絵文字のボタン 🔖）が追加されます。このボタンをクリックするとBetter Stylesのコンテンツが表示されます。Web UIの起動毎にボタンを押すのが面倒な場合は <<show_by_default>> オプションを使用することでBetter Stylesが表示された状態でWeb UIが開始するように変更できます。
+
+=== スタイルの保存
+``Add style``ボタンをクリックすると、スタイルを保存するためのフォームが表示されます。基本的にはWeb UIと同じですが、フィールドに空白を設定することでその項目をスタイルの保存対象から除外することができます。また、<<exclude_default_values>> のチェックボックスを利用して、デフォルト値の設定されたフィールドを無視することも可能です。
+
+image::images/style-editor.png[Image - Style editor,768]
+
+==== Better Styles独自の項目
+以降ではフォーム内に存在するBetter Styles独自の項目について説明していきます。
+
+===== Group (必須)
+スタイルが所属するグループを入力します。デフォルト値は現在選択されているグループです。``all``グループが選択されている場合は``default``グループが初期値に設定されます。
+
+===== Style name (必須)
+保存するスタイルの名前を入力します。長い名前を付けると一覧で省略表示されてしまうので、注意してください。
+
+===== Checkpoint exclusive
+スタイルをドロップダウンで選択したチェックポイント専用に設定することができます。専用となったスタイルは別のチェックポイントがロードされている場合、一覧に表示されなくなります。これらの非表示となったスタイルは``all``グループでは引き続き表示されます。
+
+===== Fields with default values will be excluded [[exclude_default_values]]
+この項目にチェックが入っている場合、値が入力されているフィールドであってもそれがデフォルト値の場合、スタイルとして保存されなくなります。
+
+===== Thumbnail
+画像が生成されてギャラリーが有効になっている場合、サムネイルを選択することができるようになります。
+
+=== スタイルの適用
+スタイルの一覧から、適用したいスタイルを選択し、``Apply styles``ボタンを押すことでスタイルを適用できます。
+
+=== スタイルの削除
+スタイルの一覧から、削除したいスタイルを選択し、``Delete styles``ボタンを押すことでスタイルを削除できます。
+
+=== スタイルのリセット
+``Reset style``ボタンを押すことで現在のスタイルを初期値に戻すことができます。
+
+=== styles.csvのインポート
+``Import styles.csv``ボタンを押すことでstyles.csvの内容を``styles.csv``グループにインポートすることができます。``styles.csv``グループが存在しない場合は新規に作成されます。また、このボタンは <<hide_import_styles_csv>> オプションで非表示にすることができます。
+
+== コンフィグ
+Better Stylesは、Settingsタブに独自のコンフィグセクションを作成します。以下に、それぞれの項目について説明します。
+
+image::images/settings.png[Image - Settings]
+
+=== Language of Better Styles
+Better Stylesコンポーネントの使用言語を指定します。デフォルト値は``Auto``（Web UIで設定された言語と同じ）です。現在、``ja_JP``の言語が利用可能です。
+
+=== Hide the original Styles
+オリジナルのStylesドロップダウンと関連するボタンを非表示にするかどうかを選択します。
+
+=== Show the Better Styles by default [[show_by_default]]
+Better Stylesのコンポーネントを初期状態で表示しておくかどうかを選択します。
+
+=== Hide "Import styles.csv" button [[hide_import_styles_csv]]
+``Import styles.csv``ボタンを非表示にするかどうかを選択します。
+
+=== Default Click skip
+``Reset style``ボタンによるスタイルのリセット時に参照される"Clip skip"の初期値を設定します。
+
+=== Default Eta noise seed delta
+``Reset style``ボタンによるスタイルのリセット時に参照される"Eta noise seed delta"の初期値を設定します。
+
+== ライセンス
+Better StylesはMITライセンスの下で開発・公開されています。ライセンスの詳細については、以下のリンクからライセンス条文を参照してください。
+
+link:../LICENSE[MITライセンス]
