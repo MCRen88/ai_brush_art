@@ -1,7 +1,0 @@
-{
-  "client-src/**/*.{js,ts,svelte}": [
-    "pnpm run check",
-    "prettier --write",
-    "eslint --fix"
-  ]
-}
